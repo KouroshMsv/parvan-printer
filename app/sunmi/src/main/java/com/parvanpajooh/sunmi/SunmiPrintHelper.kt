@@ -32,8 +32,6 @@ object SunmiPrintHelper {
         if (it.printerPaper == 1) "58mm" else "80mm"
     }
 
-    val hasPrinterService = sunmiPrinterService != null
-
     fun initSunmiPrinterService(context: Context) {
         mContext = context
         try {
@@ -67,56 +65,6 @@ object SunmiPrintHelper {
      */
     fun sendRawData(data: ByteArray) {
         getService { it.sendRAWData(data, null) }
-    }
-
-    data class Pickup(
-        val pickupDateTime: String,
-        val pickupId: String,
-        val courierName: String,
-        val parcels: MutableList<Parcel>
-    )
-
-    data class Parcel(val city: String, val totalWeight: BigDecimal, val count: Int)
-
-    fun printPickup(pickup: Pickup, withSign: Boolean) {
-        setAlign(Alignment.CENTER)
-        printBitmap(BitmapFactory.decodeResource(mContext.resources, R.drawable.mahex))
-        enter()
-        print("mahex.com         ۰۲۱-۹۶۹۶")
-        enter()
-        val totalCount = pickup.parcels.sumBy { it.count }
-        var totalWeight = BigDecimal(0.0)
-        pickup.parcels.forEach { totalWeight = totalWeight.add(it.totalWeight) }
-        printMap(
-            mapOf(
-                "جمع\u200Cآوری" to pickup.pickupDateTime.enToFa(),
-                "کدپیگیری" to pickup.pickupId.enToFa(),
-                "کاربر" to pickup.courierName.enToFa(),
-                "تعداد/وزن\u200Cکل" to "${totalCount.toString().enToFa()} / ${totalWeight.toString()
-                    .enToFa()} کیلو"
-            )
-        )
-        print("..............................")
-        printMap(mapOf("شهر" to "تعداد / وزن کیلوگرم"))
-        printMap(pickup.parcels.associate {
-            it.city to "${it.totalWeight.toString().enToFa()} /${it.count.toString().enToFa()
-                .withPad()}"
-        })
-        if (withSign)
-            print(
-                """ ..........................
-.                          .
-.                          .
-.                          .
-.           امضا            .
-.                          .
-.                          .
-.                          .
- ..........................
-
-                """.trimIndent()
-            )
-        feedPaper()
     }
 
     fun enter() {
@@ -476,9 +424,8 @@ object SunmiPrintHelper {
         }
     }
 
-    private fun String.withPad() = padStart(("تعداد".length))
 
-    private fun String.enToFa(): String {
+    fun String.enNumberToFa(): String {
         var content = this
         for ((en, fa) in numberMaps) {
             content = content.replace(en, fa)
@@ -497,6 +444,7 @@ object SunmiPrintHelper {
         "7" to "۷",
         "8" to "۸",
         "9" to "۹"
+
 
     )
 }

@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         SunmiPrintHelper.initSunmiPrinterService(this)
-        Handler().postDelayed({
+       /* Handler().postDelayed({
             SunmiPrintHelper.apply {
 
                 printPickup(
@@ -29,6 +29,6 @@ class MainActivity : AppCompatActivity() {
                 feedPaper()
             }
 
-        }, 2000)
+        }, 2000)*/
     }
 }
